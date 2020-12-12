@@ -1,18 +1,14 @@
 ----------------------------------------------------------
 Atividade 5 - Execução
 ----------------------------------------------------------
-git clone https://github.com/jonashackt/docker-elk.git
-----------------------------------------------------------
-
-- iniciar com docker-compose
-(se necessário, sudo snap install docker)
-> sudo docker-compose up -d
-----------------------------------------------------------
 git clone https://github.com/jonashackt/spring-rabbitmq-messaging-microservices
 ----------------------------------------------------------
 
 - parar docker RabbitMQ
 > sudo docker stop rabbitmq
+
+(opcional, remover conatiner)
+> sudo docker rm rabbitmq
 
 - build do projeto
 mvn install -DskipTests (demora um pouco - download de pacotes)
@@ -58,6 +54,25 @@ services:
       timeout: 15s
       retries: 3
 
+  weatherservice:
+    build: ./weatherservice
+    depends_on:
+      - rabbitmq
+    ports:
+      - "8095:8095"
+    environment:
+      - "SPRING_RABBITMQ_HOST=rabbitmq"
+      - "LOGSTASH_HOST=host.docker.internal"
+    tty:
+      true
+    restart:
+      unless-stopped
+    healthcheck:
+      test: [ "CMD", "nc", "-z", "localhost", "8095" ]
+      interval: 5s
+      timeout: 15s
+      retries: 3
+
 
 - subir com docker-compose
 > sudo docker-compose up -d (baixar imagens e inicia os containers)
@@ -84,21 +99,14 @@ guest & guest
 
 - modificar docker-compose e inserir weatherservice
 
-  weatherservice:
-    build: ./weatherservice
-    depends_on:
-      - rabbitmq
-    ports:
-      - "8095:8095"
-    environment:
-      - "SPRING_RABBITMQ_HOST=rabbitmq"
-      - "LOGSTASH_HOST=host.docker.internal"
-    tty:
-      true
-    restart:
-      unless-stopped
-    healthcheck:
-      test: [ "CMD", "nc", "-z", "localhost", "8095" ]
-      interval: 5s
-      timeout: 15s
-      retries: 3
+----------------------------------------------------------
+git clone https://github.com/jonashackt/docker-elk.git
+----------------------------------------------------------
+
+- iniciar com docker-compose
+(se necessário, sudo snap install docker)
+> sudo docker-compose up -d
+
+
+- listar portas "em escuta" no computador
+sudo lsof -i -P -n | grep LISTEN 
