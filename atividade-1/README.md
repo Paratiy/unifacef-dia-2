@@ -22,13 +22,7 @@ Pré-requisito
 > sudo mkdir -p /docker/rabbitmq/data (salvar dados fora do container)
 > sudo docker pull rabbitmq:3-management
 
-> sudo docker run -d --name rabbitmq \
- -p 5672:5672 \
- -p 15672:15672 \
- --restart=always \
- --hostname rabbitmq-master \
- -v /docker/rabbitmq/data:/var/lib/rabbitmq \
- rabbitmq:3-management
+> sudo docker run -d --name rabbitmq -p 5672:5672 -p 15672:15672 --restart=always --hostname rabbitmq-master -v /home/carioca/docker/rabbitmq/data:/var/lib/rabbitmq rabbitmq:3-management
 ----------------------------------------------------------
 Comandos utéis
 ----------------------------------------------------------
